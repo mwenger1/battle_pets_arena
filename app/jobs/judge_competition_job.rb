@@ -5,14 +5,27 @@ class JudgeCompetitionJob < ApplicationJob
     challenger = BattlePetGateway.fetch_battle_pet(competition.challenger)
     challenged = BattlePetGateway.fetch_battle_pet(competition.challenged)
 
-    winning_combatant = [challenger, challenged].max do |combatant|
-      if combatant
-        combatant.send(competition.competition_type)
-      else
-        0
-      end
-    end
+    winner = calculate_winner(
+      challenger: challenger,
+      challenged: challenged,
+      type: competition.competition_type
+    )
 
-    competition.update(winner: winning_combatant.id)
+    if winner.present?
+      competition.update(winner: winner.id)
+    end
+  end
+
+  def calculate_winner(challenger:, challenged:, type:)
+    challenger_score = challenger.send(type)
+    challenged_score = challenged.send(type)
+
+    if challenger_score > challenged_score
+      challenger
+    elsif challenger_score < challenged_score
+      challenged
+    elsif challenger_score == challenged_score
+      challenger
+    end
   end
 end

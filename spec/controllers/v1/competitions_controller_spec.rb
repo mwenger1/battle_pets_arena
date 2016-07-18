@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe V1::CompetitionsController, type: :controller do
+  before do
+    allow(JudgeCompetitionJob).to receive(:perform_now)
+  end
+
   describe "#index" do
     it "returns all competitions with all attributes as JSON" do
       5.times { create(:competition) }

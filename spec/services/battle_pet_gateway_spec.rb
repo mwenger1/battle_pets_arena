@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe BattlePetGateway, type: :service do
   describe "fetch_battle_pet" do
     it "retrieves BattlePet attributes from BattlePets Management service" do
-      allow(RestClient).to receive(:get)
+      allow(RestClient).to receive(:get).and_return({}.to_json)
       allow(BattlePet).to receive(:new)
       id = 1
 
@@ -27,7 +27,7 @@ RSpec.describe BattlePetGateway, type: :service do
         "trainer_id": 3
       }
 
-      allow(RestClient).to receive(:get).and_return(response_json)
+      allow(RestClient).to receive(:get).and_return(response_json.to_json)
       id = 1
 
       battle_pet = BattlePetGateway.fetch_battle_pet(id)
