@@ -20,4 +20,15 @@ RSpec.describe Competition, type: :model do
       expect(competition_types - Competition::COMPETITION_TYPES).to eq []
     end
   end
+
+  describe "#after_create" do
+    it "starts a JudgeCompetitionJob" do
+      allow(JudgeCompetitionJob).to receive(:perform_now)
+
+      competition = create(:competition)
+
+      expect(JudgeCompetitionJob).to have_received(:perform_now).
+        with(competition)
+    end
+  end
 end
